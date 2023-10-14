@@ -10,18 +10,20 @@ public class AdresCheckApp {
 	public static void main(String[] args) throws IOException
 	{
 		defaultOut = System.out;
-	//	UserPreferences.insertActivationKey("test");	//valid
-	//	UserPreferences.insertActivationKey("teit");	//invalid
-	//	UserPreferences.insertLicense("771469");		//valid
-	//	UserPreferences.insertLicense("771460");		//invalid
+		UserPreferences.insertActivationKey("valid");	//valid
+	//	UserPreferences.insertActivationKey("null");	//invalid
+		UserPreferences.insertLicense("EQ\\XTG");		//valid
+	//	UserPreferences.insertLicense("DP\\XTG");		//invalid
+	//	UserPreferences.insertLicense("null");			//invalid (empty)
 		
 // Start AdresFrame 	
 		EventQueue.invokeLater(new Runnable() {
 			public void run() 
 			{
+				
 				try { AdresFrame window = new AdresFrame();
-					System.setOut(new PrintStream(new GUIOutputStream(window), true));
-					System.setErr(new PrintStream(new GUIOutputStream(window), true));
+				//	System.setOut(new PrintStream(new GUIOutputStream(window), true));
+				//	System.setErr(new PrintStream(new GUIOutputStream(window), true));
 					window.frame.setVisible(true);
 			        System.out.println("PatientSync v0.4.4");
 			        System.out.println("All rights reserved. Copyright 2022-2023.");

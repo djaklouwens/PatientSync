@@ -23,7 +23,7 @@ public class UserPreferences {
     
     public static String getActivationKey()
     {
-    	return prefs.get("activationekey", "no");
+    	return prefs.get("activationekey", "null");
     }
     
     public static void insertActivationKey(String key)
@@ -33,7 +33,12 @@ public class UserPreferences {
     
     public static String getLicense()
     {
-    	return prefs.get("license", "no");
+    	return prefs.get("license", "null");
+    }
+    
+    public static void insertLicense(String license)
+    {
+    	prefs.put("license", license);
     }
     
     public static void setUserID(String userID)
