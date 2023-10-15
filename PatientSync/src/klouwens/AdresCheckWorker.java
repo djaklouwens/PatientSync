@@ -99,7 +99,7 @@ public class AdresCheckWorker extends SwingWorker<Void, Integer> {
 		infoLabel.setText("Verbinden met SBV-Z starten");
 		System.out.println("	");
 		System.out.println("Start Selenium Initialization");
-		
+//		System.setProperty("webdriver.chrome.driver", "E:\\chromedriver.exe");
 		ChromeOptions options = new ChromeOptions();
 		options.addArguments("--remote-allow-origins=*");
 		options.addArguments("--window-size=550,350");

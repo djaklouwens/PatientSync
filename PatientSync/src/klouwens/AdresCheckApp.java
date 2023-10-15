@@ -11,10 +11,10 @@ public class AdresCheckApp {
 	{
 		defaultOut = System.out;
 	//	UserPreferences.insertActivationKey("valid");	//valid
-		UserPreferences.insertActivationKey("null");	//invalid
+	//	UserPreferences.insertActivationKey("null");	//invalid
 	//	UserPreferences.insertLicense("EQ\\XTG");		//valid
 	//	UserPreferences.insertLicense("DP\\XTG");		//invalid
-		UserPreferences.insertLicense("null");			//invalid (empty)
+	//	UserPreferences.insertLicense("null");			//invalid (empty)
 		
 // Start AdresFrame 	
 		EventQueue.invokeLater(new Runnable() {
