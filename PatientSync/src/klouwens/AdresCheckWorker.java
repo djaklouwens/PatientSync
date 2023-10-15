@@ -33,7 +33,7 @@ import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-import io.github.bonigarcia.wdm.WebDriverManager;
+
 
 public class AdresCheckWorker extends SwingWorker<Void, Integer> {
     private File[] inputfiles;
@@ -110,7 +110,7 @@ public class AdresCheckWorker extends SwingWorker<Void, Integer> {
 		
 		infoLabel.setText("Verbinden met SBV-Z 1/3");
 		System.out.println("Selenium Initialization 1/3");
-		WebDriverManager.chromedriver().setup();
+	//	WebDriverManager.chromedriver().setup();
 		infoLabel.setText("Verbinden met SBV-Z 2/3");
 		System.out.println("Selenium Initialization 2/3");		// Crashing here means the WebDriverManager has to be updated
     	ChromeDriver driver = new ChromeDriver(options);		
@@ -223,7 +223,7 @@ public class AdresCheckWorker extends SwingWorker<Void, Integer> {
 					faulty = faulty + 1;
 			
 // Compare against AW			//TODO FIX AWEN
-	/*					
+					
 					String medAW = " ";
 					String sbvzAW = " ";
 					String [] aWen = Awen.getAWen();
@@ -247,7 +247,7 @@ public class AdresCheckWorker extends SwingWorker<Void, Integer> {
 						awMed--;
 						awSBVZ--;
 					}
-					*/
+
 					printFaultyPatient(pt, medAW, sbvzAW, tot);
 					exportFaultyPatient(ss, pt, medAW, sbvzAW, tot);
 					

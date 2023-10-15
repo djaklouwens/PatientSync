@@ -41,15 +41,63 @@ public class UserPreferences {
     	prefs.put("license", license);
     }
     
-    public static void setUserID(String userID)
-    {
-    	prefs.put("userid", userID);
+    public static boolean getMensnummerBox() {
+        return prefs.get("mensnummerbox", "true").equals("true");
     }
-    
-    public static String getUserID()
-    {
-    	return prefs.get("userid", "");
-    }
-    
 
+    public static void setMensnummerBox(String mensnummerBox) {
+        prefs.put("mensnummerbox", mensnummerBox);
+    }
+
+    public static boolean getBSNBox() {
+        return prefs.get("bsnbox", "true").equals("true");
+    }
+
+    public static void setBSNBox(String bsnBox) {
+        prefs.put("bsnbox", bsnBox);
+    }
+
+    public static boolean getGebBox() {
+        return prefs.get("gebbox", "true").equals("true");
+    }
+
+    public static void setGebBox(String gebBox) {
+        prefs.put("gebbox", gebBox);
+    }
+
+    public static boolean getWoonverbandBox() {
+        return prefs.get("woonverbandbox", "true").equals("true");
+    }
+
+    public static void setWoonverbandBox(String woonverbandBox) {
+        prefs.put("woonverbandbox", woonverbandBox);
+    }
+
+    public static boolean getOldAdresBox() {
+        return prefs.get("oldadresbox", "true").equals("true");
+    }
+
+    public static void setOldAdresBox(String oldAdresBox) {
+        prefs.put("oldadresbox", oldAdresBox);
+    }
+
+    public static boolean getNewAdresBox() {
+        return prefs.get("newadresbox", "true").equals("true");
+    }
+
+    public static void setNewAdresBox(String newAdresBox) {
+        prefs.put("newadresbox", newAdresBox);
+    }
+
+    public static void setCheckBox(String checkBox, String state) {
+        prefs.put(checkBox, state);
+    }
+
+    public static String getUserID() {
+        return prefs.get("userid", "");
+    }
+
+    public static void setUserID(String userID) {
+        prefs.put("userid", userID);
+    }
 }

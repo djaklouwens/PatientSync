@@ -11,6 +11,9 @@ public class Patient
 	private String straat;
 	private String nummer;
 	private String woonverband;
+	private String stad;
+	private String adresMedicom;
+	private String mensnummer;
 	
 	
 	public String getBsn() {
@@ -54,6 +57,24 @@ public class Patient
 	}
 	public void setNummer(String nummer) {
 		this.nummer = nummer;
+	}
+	public String getAdresMedicom() {
+		return this.adresMedicom;
+	}
+	 public void setAdresMedicom(String adresMedicom) {
+		 this.adresMedicom = adresMedicom;
+	}
+	public String getStad() {
+		return this.stad;
+	}
+	public void setStad(String stad) {
+		this.stad = stad;
+	}
+	public String getMensnummer() {
+		return this.mensnummer;
+	}
+	public void setMensnummer(String mensnummer) {
+		this.mensnummer = mensnummer;
 	}
 
 	

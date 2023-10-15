@@ -6,6 +6,8 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.event.ItemListener;
+import java.awt.event.ItemEvent;
 import java.io.File;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -30,6 +32,7 @@ import javax.swing.JComboBox;
 import javax.swing.JFormattedTextField;
 
 import org.jdesktop.swingx.prompt.PromptSupport;
+import org.jdesktop.swingx.prompt.PromptSupport.FocusBehavior;
 
 public class AdresFrame {
 	// GUI Items
@@ -91,7 +94,9 @@ public class AdresFrame {
         infoLabel.setText(trans.getString("welcome.message"));
         
         fileLabel = new JLabel("");
+        fileLabel.setBounds(121, 440, 400, 14);
         progressLabel = new JLabel("");
+        progressLabel.setBounds(330, 460, 200, 14);
         
         validationTextField = new JFormattedTextField();
         validationTextField.setBounds(270, 93, 200, 20);
@@ -120,51 +125,10 @@ public class AdresFrame {
             frame.getContentPane().add(validationTextField);
             PromptSupport.setPrompt(trans.getString("enter.license"), validationTextField);
             PromptSupport.setFocusBehavior(PromptSupport.FocusBehavior.SHOW_PROMPT, validationTextField);
-            validationTextField.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent e) {
-                    String inputText = validationTextField.getText();
-                  
-                   // Activation Key Reset
-                    if(inputText.equals("null"))
-                    {
-                    	UserPreferences.insertActivationKey("null");
-                    	infoLabel.setText("Activation Key has been reset");
-        				errorLabel.setText(trans.getString("prompt.restart"));
-                    }
-                    
-                    //License
-                    else if (inputText.length() == 6)
-                    {
-                    	UserPreferences.insertLicense(inputText);
-        						try {
-        							if (Decrypt.validateDate() == true)
-        							 {
-        								SimpleDateFormat sdf = new SimpleDateFormat("MM-dd-yyyy");
-        								infoLabel.setText(trans.getString("success.license") + " " + sdf.format(Decrypt.decryptDate(inputText)));
-        								errorLabel.setText(trans.getString("prompt.restart"));
-        							 }
-        						} catch (ParseException e1) {
-        							errorLabel.setText(trans.getString("error.license.invalid") + " (ParseException)");
-        							UserPreferences.insertLicense("null");							
-        						}
-        						try {
-        							if (Decrypt.validateDate() == false)
-        							 {
-        								errorLabel.setText(trans.getString("error.license.expired"));							 
-        							 }
-        						} catch (ParseException e1) {
-        							errorLabel.setText(trans.getString("error.license.invalid")  + " (ParseException)");
-        							UserPreferences.insertLicense("null");
-        						}		
-                    }
-                    else {
-                    	//TODO invalid input length error
-                    }
-                
-                }});
+            validationApp();
         }
 
-       if (Decrypt.validateDate() == true)  //TODO Deal with parse exception here! they happen when license is already invalid before startup.
+        else if (Decrypt.validateDate() == true)  //TODO Deal with parse exception here! they happen when license is already invalid before startup.
        {
     	  
     	   mainApp();
@@ -198,64 +162,125 @@ public class AdresFrame {
 
     public void validationApp()
     {
-    	System.out.println("Validation App");
-		
-    validationTextField.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
-            // get the text the user entered
-            String inputText = validationTextField.getText();
-            System.out.print(inputText.length());
-           
-           
-           // Activation Key 
-            if (!(inputText.length() == 6)) //TODO Activation code cant be 6 chars
-            {
-            	UserPreferences.insertActivationKey(inputText);
-
-				progressLabel.setText(trans.getString("success.activationkey"));
-				errorLabel.setText(trans.getString("prompt.restart"));
-
-			}
+        validationTextField.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                String inputText = validationTextField.getText();
+              
+               // Activation Key Reset
+                if(inputText.equals("null"))
+                {
+                	UserPreferences.insertActivationKey("null");
+                	infoLabel.setText("Activation Key has been reset");
+    				errorLabel.setText(trans.getString("prompt.restart"));
+                }
+                
+                //License
+                else if (inputText.length() == 6)
+                {
+                	UserPreferences.insertLicense(inputText);
+    						try {
+    							if (Decrypt.validateDate() == true)
+    							 {
+    								SimpleDateFormat sdf = new SimpleDateFormat("MM-dd-yyyy");
+    								infoLabel.setText(trans.getString("success.license") + " " + sdf.format(Decrypt.decryptDate(inputText)));
+    								errorLabel.setText(trans.getString("prompt.restart"));
+    							 }
+    						} catch (ParseException e1) {
+    							errorLabel.setText(trans.getString("error.license.invalid") + " (ParseException)");
+    							UserPreferences.insertLicense("null");							
+    						}
+    						try {
+    							if (Decrypt.validateDate() == false)
+    							 {
+    								errorLabel.setText(trans.getString("error.license.expired"));							 
+    							 }
+    						} catch (ParseException e1) {
+    							errorLabel.setText(trans.getString("error.license.invalid")  + " (ParseException)");
+    							UserPreferences.insertLicense("null");
+    						}		
+                }
+                else {
+                	//TODO invalid input length error
+                }
             
-            //License
-            else if (inputText.length() == 6)
-            {
-            	UserPreferences.insertLicense(inputText);
-
-						try {
-							if (Decrypt.validateDate() == true)
-							 {
-								progressLabel.setText(trans.getString("success.license"));
-								errorLabel.setText(trans.getString("prompt.restart"));
-							 }
-						} catch (ParseException e1) {
-							// TODO Auto-generated catch block
-							e1.printStackTrace();
-						}
-						try {
-							if (Decrypt.validateDate() == false)
-							 {
-								progressLabel.setText(trans.getString("error.license"));							 
-							 }
-						} catch (ParseException e1) {
-							// TODO Auto-generated catch block
-							e1.printStackTrace();
-						}
-						
-					
-            }
-
-        
-        }});}
+            }});}
+// Start Normal Behavior
 	
-	public void mainApp()
-	{
+	public void mainApp(){
+		
+// Init FileChooser
     System.out.println("Main App");
 	fileChooser = new JFileChooser();
 	fileChooser.setBounds(25, 11, 582, 399);
 	fileChooser.setDialogTitle(trans.getString("choose.input.file"));
 	fileChooser.setMultiSelectionEnabled(true);
 	fileChooser.setFileFilter(new FileNameExtensionFilter(trans.getString("csv.excel"), "csv", "xlsx"));
+	
+	
+    JCheckBox mensnummerBox = new JCheckBox("Mensnummer");
+    mensnummerBox.setSelected(UserPreferences.getMensnummerBox());
+    mensnummerBox.setBounds(10, 89, 97, 23);
+    frame.getContentPane().add(mensnummerBox);
+    mensnummerBox.setName("mensnummerbox");
+		
+	JCheckBox bsnBox = new JCheckBox("BSN");
+	bsnBox.setSelected(UserPreferences.getBSNBox());
+	bsnBox.setBounds(10, 115, 97, 23);
+	frame.getContentPane().add(bsnBox);
+	bsnBox.setName("bsnbox");
+
+	JCheckBox gebBox = new JCheckBox("Geb. datum");
+	gebBox.setSelected(UserPreferences.getGebBox());
+	gebBox.setBounds(109, 89, 97, 23);
+	frame.getContentPane().add(gebBox);
+	gebBox.setName("gebbox");
+ 
+	JCheckBox woonverbandBox = new JCheckBox("Woonverband");
+	woonverbandBox.setSelected(UserPreferences.getWoonverbandBox());
+	woonverbandBox.setBounds(109, 115, 97, 23);
+	frame.getContentPane().add(woonverbandBox);
+	woonverbandBox.setName("woonverbandbox");
+
+	JCheckBox oldAdresBox = new JCheckBox("Oude Adres");
+	oldAdresBox.setSelected(UserPreferences.getOldAdresBox());
+	oldAdresBox.setBounds(208, 89, 97, 23);
+	frame.getContentPane().add(oldAdresBox);
+	oldAdresBox.setName("oldadresbox");
+
+	JCheckBox newAdresBox = new JCheckBox("Nieuwe Adres");
+	newAdresBox.setSelected(UserPreferences.getNewAdresBox());
+	newAdresBox.setBounds(208, 115, 97, 23);
+	frame.getContentPane().add(newAdresBox);
+	newAdresBox.setName("newadresbox");
+ 
+	JLabel UserIDLabel = new JLabel("User ID:");
+	UserIDLabel.setBounds(20, 227, 46, 14);
+	frame.getContentPane().add(UserIDLabel);
+ 
+	JFormattedTextField userIDTextField = new JFormattedTextField();
+	userIDTextField.setBounds(20, 242, 74, 20);
+	frame.getContentPane().add(userIDTextField);
+	PromptSupport.setPrompt(UserPreferences.getUserID(), userIDTextField);
+	PromptSupport.setFocusBehavior(FocusBehavior.SHOW_PROMPT, userIDTextField);
+	userIDTextField.addActionListener(new ActionListener() {
+		public void actionPerformed(ActionEvent e) {
+			String inputText = userIDTextField.getText();
+			UserPreferences.setUserID(inputText);
+	}});      
+	
+	ItemListener checkboxListener = new ItemListener() {
+		public void itemStateChanged(ItemEvent e) {
+		JCheckBox checkbox = (JCheckBox)e.getItem();
+		String boolState = e.getStateChange() == 1 ? "true" : "false";
+		UserPreferences.setCheckBox(checkbox.getName(), boolState);
+		 }};
+		 
+	mensnummerBox.addItemListener(checkboxListener);
+	bsnBox.addItemListener(checkboxListener);
+	gebBox.addItemListener(checkboxListener);
+	woonverbandBox.addItemListener(checkboxListener);
+	oldAdresBox.addItemListener(checkboxListener);
+	newAdresBox.addItemListener(checkboxListener);
 	
 	btnStart = new JButton(trans.getString("start.sync"));
 	btnStart.addMouseListener(new MouseAdapter() {
@@ -264,7 +289,7 @@ public class AdresFrame {
 			if (fileChooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION)
 			{
 				disableLocaleBox();
-				progressLabel.setText(trans.getString("starting.sync"));
+				infoLabel.setText(trans.getString("starting.sync"));
 				errorLabel.setText("");
 				File[] inputfiles = fileChooser.getSelectedFiles();
 
@@ -289,7 +314,7 @@ public class AdresFrame {
 
    
     
-    JProgressBar progressBar = new JProgressBar();
+    progressBar = new JProgressBar();
     progressBar.setBounds(121, 457, 465, 22);
     frame.getContentPane().add(progressBar);
     
