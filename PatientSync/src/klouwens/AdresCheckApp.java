@@ -9,7 +9,6 @@ public class AdresCheckApp {
 	public static PrintStream defaultOut;
 	public static void main(String[] args) throws IOException
 	{
-		defaultOut = System.out;
 	//	UserPreferences.insertActivationKey("valid");	//valid
 	//	UserPreferences.insertActivationKey("null");	//invalid
 	//	UserPreferences.insertLicense("EQ\\XTG");		//valid
@@ -17,21 +16,33 @@ public class AdresCheckApp {
 	//	UserPreferences.insertLicense("null");			//invalid (empty)
 		
 // Start AdresFrame 	
-		EventQueue.invokeLater(new Runnable() {
+		EventQueue.invokeLater(new Runnable() 
+		{
 			public void run() 
 			{
 				
-				try { AdresFrame window = new AdresFrame();
-				//	System.setOut(new PrintStream(new GUIOutputStream(window), true));
-				//	System.setErr(new PrintStream(new GUIOutputStream(window), true));
-					window.frame.setVisible(true);
-			        System.out.println("PatientSync v0.4.4");
-			        System.out.println("All rights reserved. Copyright 2022-2023.");
-			        System.out.println("	");
-			        System.out.println("Activation Key:	" + UserPreferences.getActivationKey());
-			        System.out.println("License:	" + UserPreferences.getLicense());
-			      
-				} catch (Exception e) {
+				try 
+				{	
+					if (UserPreferences.getUserID().equals("DEV"))
+					{
+						DeveloperFrame developerFrame = new DeveloperFrame();
+						System.setErr(new PrintStream(new GUIErrorStream(developerFrame, System.err), true));
+						System.setOut(new PrintStream(new GUIOutputStream(developerFrame, System.out), true));
+						developerFrame.frame.setVisible(true);
+					}
+				
+					System.out.println("PatientSync v0.6.1");
+					System.out.println("All rights reserved. Copyright 2022-2023.");
+					System.out.println("	");
+					System.out.println("Activation Key:	" + UserPreferences.getActivationKey());
+					System.out.println("License:		" + UserPreferences.getLicense());
+					
+					AdresFrame adresFrame = new AdresFrame();
+					adresFrame.frame.setVisible(true);
+				} 
+				
+				catch (Exception e) 
+				{
 					e.printStackTrace();
 				}
 			}

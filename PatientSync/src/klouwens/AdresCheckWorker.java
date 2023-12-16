@@ -19,6 +19,7 @@ import java.util.ResourceBundle;
 import javax.swing.JLabel;
 import javax.swing.JProgressBar;
 import javax.swing.SwingWorker;
+import javax.swing.text.BadLocationException;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -67,11 +68,11 @@ public class AdresCheckWorker extends SwingWorker<Void, Integer> {
         AdresCheckWorker.progressBar = progressBar;
         AdresCheckWorker.progressLabel = progressLabel;
         AdresCheckWorker.fileLabel = fileLabel;
-        
     }
 
     @Override
-    protected Void doInBackground() throws Exception {
+    protected Void doInBackground() 
+    { try {
     	System.out.println("Starting Sync >");
     	System.out.println("User ID:		" + UserPreferences.getUserID());
     	
@@ -94,18 +95,18 @@ public class AdresCheckWorker extends SwingWorker<Void, Integer> {
 		SimpleDateFormat form = new SimpleDateFormat("yyMMdd");   
 		String date = form.format(new Date());	
 		
-
+		
 // Init Selenium
 		infoLabel.setText("Verbinden met SBV-Z starten");
 		System.out.println("	");
 		System.out.println("Start Selenium Initialization");
 //		System.setProperty("webdriver.chrome.driver", "E:\\chromedriver.exe");
 		ChromeOptions options = new ChromeOptions();
-		options.addArguments("--remote-allow-origins=*");
-		options.addArguments("--window-size=550,350");
-		options.addArguments("--disable-extensions");
-		options.addArguments("--app=https://raadplegen.sbv-z.nl");
-		options.setExperimentalOption("excludeSwitches", new String[]{"enable-automation"});
+	//	options.addArguments("--remote-allow-origins=*");
+	//	options.addArguments("--window-size=550,350");
+	//	options.addArguments("--disable-extensions");
+	//	options.addArguments("--app=https://raadplegen.sbv-z.nl");
+	//	options.setExperimentalOption("excludeSwitches", new String[]{"enable-automation"});
 	//	options.addArguments("--disable-gpu");
 		
 		infoLabel.setText("Verbinden met SBV-Z 1/3");
@@ -120,6 +121,11 @@ public class AdresCheckWorker extends SwingWorker<Void, Integer> {
     	
     	driver.get("https://raadplegen.sbv-z.nl/Diensten/OpvragenPersoonsgegevens");
     	System.out.println("User login sucessful");
+ 
+	
+
+    	
+    	
     	
     	if (! UserPreferences.getUserID().equals("ADMIN"))
     		{
@@ -279,6 +285,16 @@ public class AdresCheckWorker extends SwingWorker<Void, Integer> {
     	System.out.println("Execution time in Minutes: " + interval.toMinutes());
     	
     	}
+    	
+	}
+	catch (Exception e)
+	{
+		System.err.println("An error occurred while syncing patients. This can be caused by: Selenium, ChromeDriver, Inputfile, or dataparsing  ");
+		System.out.println("Printing Stack Trace:");
+		e.printStackTrace();
+		errorLabel.setText("An error occurred while syncing patients, please try again");;
+		infoLabel.setText(trans.getString("sync.aborted"));
+	}
     	return null;
 	}
 	

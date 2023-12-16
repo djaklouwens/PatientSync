@@ -4,22 +4,28 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
 
-public class GUIOutputStream extends OutputStream {
+public class GUIErrorStream extends OutputStream {
 
 	    private DeveloperFrame developerFrame;
-	    private PrintStream defaultOutStream;
-	    
-	    public GUIOutputStream(DeveloperFrame developerFrame,  PrintStream defaultOutStream) {
+	    private PrintStream defaultErrorStream;
+
+	    public GUIErrorStream(DeveloperFrame developerFrame, PrintStream defaultErrorStream) {
 	        this.developerFrame = developerFrame;
-	        this.defaultOutStream = defaultOutStream;
+	        this.defaultErrorStream = defaultErrorStream;
 	    }
 	    
 	   
 	@Override
 	public void write(int b) throws IOException {
 		String out = String.valueOf((char) b);
-		defaultOutStream.print(out);
-		developerFrame.appendConsoleText(out);
+		defaultErrorStream.print(out);
+		developerFrame.appendConsoleError(out);
+		
+		
+
+	
+
+
 	}
 
 }

@@ -46,27 +46,21 @@ public class AdresFrame {
 		JProgressBar progressBar;
 		JLabel progressLabel;
 		JLabel fileLabel;
-		private JButton btnNewButton;
-		private JCheckBox chckbxNewCheckBox;
 		JFormattedTextField validationTextField;
 
 	public AdresFrame() throws ParseException
 	{
 //Initialize Look & Feel	
-				try {
-					UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
-				} catch (ClassNotFoundException e) {
-					e.printStackTrace();
-				} catch (InstantiationException e) {
-					e.printStackTrace();
-				} catch (IllegalAccessException e) {
-					e.printStackTrace();
-				} catch (UnsupportedLookAndFeelException e) {
-					e.printStackTrace();
-				}
+		try 
+		{
+			UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
+		} 
+		catch (ClassNotFoundException e) {e.printStackTrace();} 
+		catch (InstantiationException e) {e.printStackTrace();} 
+		catch (IllegalAccessException e) {e.printStackTrace();} 
+		catch (UnsupportedLookAndFeelException e) {e.printStackTrace();}
 // Initialize Translations
 		trans = getTrans();
-		System.out.println(new Locale(UserPreferences.getLocale().toString()));
 	
 // Initialize JFrame		
 		frame = new JFrame();
