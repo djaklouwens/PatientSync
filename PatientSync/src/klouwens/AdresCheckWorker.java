@@ -86,7 +86,7 @@ public class AdresCheckWorker extends SwingWorker<Void, Integer> {
 		{	// Error invalid file type
 			infoLabel.setText(trans.getString("sync.aborted"));
 			errorLabel.setText(trans.getString("error.filetype"));
-			System.out.println("ERROR:		File validation failed: Input file is not .csv or .xlsx");
+			System.out.println("ERROR:		File validation failed: Input file is not .csv");
 			return null;	
 		}
 		
@@ -102,12 +102,12 @@ public class AdresCheckWorker extends SwingWorker<Void, Integer> {
 		System.out.println("Start Selenium Initialization");
 //		System.setProperty("webdriver.chrome.driver", "E:\\chromedriver.exe");
 		ChromeOptions options = new ChromeOptions();
-	//	options.addArguments("--remote-allow-origins=*");
-	//	options.addArguments("--window-size=550,350");
-	//	options.addArguments("--disable-extensions");
-	//	options.addArguments("--app=https://raadplegen.sbv-z.nl");
-	//	options.setExperimentalOption("excludeSwitches", new String[]{"enable-automation"});
-	//	options.addArguments("--disable-gpu");
+		options.addArguments("--remote-allow-origins=*");
+		options.addArguments("--window-size=550,350");
+		options.addArguments("--disable-extensions");
+		options.addArguments("--app=https://raadplegen.sbv-z.nl");
+		options.setExperimentalOption("excludeSwitches", new String[]{"enable-automation"});
+		options.addArguments("--disable-gpu");
 		
 		infoLabel.setText("Verbinden met SBV-Z 1/3");
 		System.out.println("Selenium Initialization 1/3");
@@ -127,7 +127,7 @@ public class AdresCheckWorker extends SwingWorker<Void, Integer> {
     	
     	
     	
-    	if (! UserPreferences.getUserID().equals("ADMIN"))
+    	if (! UserPreferences.getUserID().equals("DEV"))
     		{
     		driver.manage().window().minimize();
     		driver.manage().window().setPosition(new Point(-32000,-32000));
@@ -166,16 +166,8 @@ public class AdresCheckWorker extends SwingWorker<Void, Integer> {
 // Import Patients Array and create Export location
 			ArrayList<Patient> patients = new ArrayList<Patient>();
 			File exportFile;	
-			
-			if (inputfile.getName().endsWith(".xlsx"))
-				{
-					System.out.println("File type:		.xlsx");
-					exportFile = new File(inputfile.getParentFile(), inputfile.getName().substring(0, inputfile.getName().length() - 5) + "_outputdata_" + date + ".xlsx"); 
-					patients = importXLSXPatientsToArray(inputfile);
-					
-				}
-			
-			else if (inputfile.getName().endsWith(".csv"))
+		
+			if (inputfile.getName().endsWith(".csv"))
 				{	
 					System.out.println("File type:		.csv");
 					exportFile = new File(inputfile.getParentFile(), inputfile.getName().substring(0, inputfile.getName().length() - 4) + "_outputdata_" + date + ".xlsx");
@@ -184,7 +176,7 @@ public class AdresCheckWorker extends SwingWorker<Void, Integer> {
 				
 			else 
 				{
-					System.out.print("Error: invalid file type"); errorLabel.setText("Error: invalid file type"); return null;	// Error invalid file type
+					System.out.print("Error: invalid file type"); errorLabel.setText("Error: invalid file type"); return null;	// TODO is this unnecessary? we already validated
 				}
 			
 			if (patients.isEmpty())
@@ -287,7 +279,7 @@ public class AdresCheckWorker extends SwingWorker<Void, Integer> {
     	}
     	
 	}
-	catch (Exception e)
+catch (Exception e)
 	{
 		System.err.println("An error occurred while syncing patients. This can be caused by: Selenium, ChromeDriver, Inputfile, or dataparsing  ");
 		System.out.println("Printing Stack Trace:");
@@ -295,8 +287,10 @@ public class AdresCheckWorker extends SwingWorker<Void, Integer> {
 		errorLabel.setText("An error occurred while syncing patients, please try again");;
 		infoLabel.setText(trans.getString("sync.aborted"));
 	}
-    	return null;
-	}
+    
+    return null;
+    
+    }
 	
 	public static ArrayList<Patient> makePatientArray(String[][] input)
 	{	
@@ -316,52 +310,7 @@ public class AdresCheckWorker extends SwingWorker<Void, Integer> {
 		return patients;
 		
 	}
-					
-	public static ArrayList<Patient> importXLSXPatientsToArray(File inputFile) throws IOException 
-	{
-		ArrayList<Patient> patients;
-		patients = new ArrayList<Patient>();
-						
-		FileInputStream file = new FileInputStream(inputFile);
-		XSSFWorkbook workbook = new XSSFWorkbook(file);
-		XSSFSheet sheet = workbook.getSheetAt(0);
-		        
-
-		Iterator<Row> itr = sheet.iterator();
-		if (checkXLSXFormat(itr.next())) 
-		{
-			while(itr.hasNext())
-			{
-				Row row = itr.next();
-				patients.add(readXLSXPatient(row));
-				max++;
-			}
-		}
 	
-		// Return null patients when wrong formatting
-		workbook.close();	
-		return patients;
-		
-	}
-	
-	public static boolean checkXLSXFormat(Row row)
-	{	
-		//TODO Check the presence and order of column headers and return false when wrong.
-		return true;	
-	}
-	
-	public static Patient readXLSXPatient(Row row)
-	{
-		Patient pt = new Patient();
-		pt.setBsn(row.getCell(0).getStringCellValue().replaceAll("\\s+",""));
-		pt.setGeboortedatum(row.getCell(1).getStringCellValue().replaceAll("\\s+",""));
-		pt.setAdresMedicom(row.getCell(2).getStringCellValue());
-		pt.setPostcodeMedicom(row.getCell(3).getStringCellValue().replaceAll("\\s+",""));
-		pt.setWoonverband(row.getCell(4).getStringCellValue().replaceAll("\\s+",""));
-		
-		return pt;
-	}
-				
 	public static ArrayList<Patient> importCSVPatientsToArray(File inputFile) throws IOException 
 	{
 		ArrayList<Patient> patients;
@@ -715,7 +664,7 @@ public class AdresCheckWorker extends SwingWorker<Void, Integer> {
 	public static boolean validateFile(File[] inputFiles) {
 	    for (File file : inputFiles) {
 	        String fileName = file.getName();
-	        if (!(fileName.endsWith(".xlsx") || fileName.endsWith(".csv"))) {
+	        if (!fileName.endsWith(".csv")) {
 	        	return false;
 	        }
 	    }

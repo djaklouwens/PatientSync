@@ -24,7 +24,6 @@ import javax.swing.JTextPane;
 import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
-import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.JInternalFrame;
 import javax.swing.JProgressBar;
@@ -107,7 +106,7 @@ public class AdresFrame {
             validationTextField.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     UserPreferences.insertActivationKey(validationTextField.getText());
-        			progressLabel.setText(trans.getString("success.activationkey"));
+        			infoLabel.setText(trans.getString("success.activationkey"));
         			errorLabel.setText(trans.getString("prompt.restart"));
                 }});
             
@@ -121,11 +120,18 @@ public class AdresFrame {
             PromptSupport.setFocusBehavior(PromptSupport.FocusBehavior.SHOW_PROMPT, validationTextField);
             validationApp();
         }
-
+        
         else if (Decrypt.validateDate() == true)  //TODO Deal with parse exception here! they happen when license is already invalid before startup.
        {
-    	  
-    	   mainApp();
+        	System.out.println("Authenication completed, starting mainApp");
+        	try {
+        		mainApp();
+        	}
+        	catch(Exception e){
+        		System.err.println("An error ocurred while running the main App!");
+        		System.out.println("Printing stacktrace: ");
+        		e.printStackTrace();
+        	}
        }
         											//14/10/23
        else if (Decrypt.validateDate() == false) //TODO Same here, but we can also just prevent that from happening by trying to parse before storing in UserPrefs.
@@ -150,8 +156,7 @@ public class AdresFrame {
 		   infoLabel.setText(trans.getString("welcome.message"));
 		   btnStart.setText(trans.getString("start.sync"));
 		   fileChooser.setDialogTitle(trans.getString("choose.input.file"));
-		   fileChooser.setFileFilter(new FileNameExtensionFilter(trans.getString("csv.excel"), "csv", "xlsx"));
-
+		   fileChooser.setFileFilter(new FileNameExtensionFilter(trans.getString("csv"), "csv"));
 	}
 
     public void validationApp()
@@ -200,15 +205,15 @@ public class AdresFrame {
             }});}
 // Start Normal Behavior
 	
-	public void mainApp(){
+	public void mainApp() throws Exception{
 		
 // Init FileChooser
-    System.out.println("Main App");
+    System.out.println("Main App Started");
 	fileChooser = new JFileChooser();
 	fileChooser.setBounds(25, 11, 582, 399);
 	fileChooser.setDialogTitle(trans.getString("choose.input.file"));
 	fileChooser.setMultiSelectionEnabled(true);
-	fileChooser.setFileFilter(new FileNameExtensionFilter(trans.getString("csv.excel"), "csv", "xlsx"));
+	fileChooser.setFileFilter(new FileNameExtensionFilter(trans.getString("csv"), "csv"));
 	
 	
     JCheckBox mensnummerBox = new JCheckBox("Mensnummer");
@@ -311,6 +316,8 @@ public class AdresFrame {
     progressBar = new JProgressBar();
     progressBar.setBounds(121, 457, 465, 22);
     frame.getContentPane().add(progressBar);
+    frame.getContentPane().add(progressLabel);
+    frame.getContentPane().add(fileLabel);
     
     comboBox = new JComboBox<String>(new String[]{"Nederlands", "English"}); // add language options to the combobox
     comboBox.setBounds(597, 457, 120, 22);

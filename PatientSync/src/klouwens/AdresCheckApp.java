@@ -31,7 +31,7 @@ public class AdresCheckApp {
 						developerFrame.frame.setVisible(true);
 					}
 				
-					System.out.println("PatientSync v0.6.1");
+					System.out.println("PatientSync v0.6.4");
 					System.out.println("All rights reserved. Copyright 2022-2023.");
 					System.out.println("	");
 					System.out.println("Activation Key:	" + UserPreferences.getActivationKey());
