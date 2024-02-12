@@ -3,12 +3,15 @@ package klouwens; //19/9 23 13.49 f2
 import java.awt.EventQueue;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.time.Year;
+import java.util.List;
 
 public class AdresCheckApp {
 
 	public static PrintStream defaultOut;
 	public static void main(String[] args) throws IOException
 	{
+
 	//	UserPreferences.insertActivationKey("valid");	//valid
 	//	UserPreferences.insertActivationKey("null");	//invalid
 	//	UserPreferences.insertLicense("EQ\\XTG");		//valid
@@ -32,7 +35,7 @@ public class AdresCheckApp {
 					}
 				
 					System.out.println("PatientSync v0.6.4");
-					System.out.println("All rights reserved. Copyright 2022-2023.");
+					System.out.println("All rights reserved. Copyright 2022-" + Year.now() + ".");
 					System.out.println("	");
 					System.out.println("Activation Key:	" + UserPreferences.getActivationKey());
 					System.out.println("License:		" + UserPreferences.getLicense());

@@ -135,6 +135,11 @@ public class AdresCheckWorker extends SwingWorker<Void, Integer> {
     	driver.get("https://raadplegen.sbv-z.nl/opvragen-persoonsgegevens");
     	System.out.println("Connected to SBV-Z");
     	
+// Importing AW data 
+    	System.out.println("Importing AW data");
+    	infoLabel.setText("Opslagwijken Initializeren");
+    	List<String> aWen = Awen.getAWen();
+    	
 // Make patients array from input 
 		System.out.println("Files inputed:		" + inputfiles.length);
 		int file = 0;
@@ -163,10 +168,12 @@ public class AdresCheckWorker extends SwingWorker<Void, Integer> {
 	    	
 	    	
 
-// Import Patients Array and create Export location
+// Import Patients Array and Create Export location
+	    	infoLabel.setText("Patiënten Initializeren");
 			ArrayList<Patient> patients = new ArrayList<Patient>();
-			File exportFile;	
-		
+			File exportFile;
+			
+	
 			if (inputfile.getName().endsWith(".csv"))
 				{	
 					System.out.println("File type:		.csv");
@@ -222,9 +229,9 @@ public class AdresCheckWorker extends SwingWorker<Void, Integer> {
 			
 // Compare against AW			//TODO FIX AWEN
 					
-					String medAW = " ";
-					String sbvzAW = " ";
-					String [] aWen = Awen.getAWen();
+					String medAW = "";
+					String sbvzAW = "";
+					
 						
 					for(String aw : aWen)
 					{
