@@ -4,7 +4,6 @@ import java.awt.EventQueue;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.time.Year;
-import java.util.List;
 
 public class AdresCheckApp {
 
@@ -34,7 +33,7 @@ public class AdresCheckApp {
 						developerFrame.frame.setVisible(true);
 					}
 				
-					System.out.println("PatientSync v0.6.4");
+					System.out.println("PatientSync v0.7.1");
 					System.out.println("All rights reserved. Copyright 2022-" + Year.now() + ".");
 					System.out.println("	");
 					System.out.println("Activation Key:	" + UserPreferences.getActivationKey());

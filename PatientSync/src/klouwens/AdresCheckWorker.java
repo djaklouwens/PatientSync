@@ -2,7 +2,6 @@ package klouwens; //19/9/14.54
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
@@ -11,7 +10,6 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
@@ -19,10 +17,8 @@ import java.util.ResourceBundle;
 import javax.swing.JLabel;
 import javax.swing.JProgressBar;
 import javax.swing.SwingWorker;
-import javax.swing.text.BadLocationException;
 
 import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -169,7 +165,7 @@ public class AdresCheckWorker extends SwingWorker<Void, Integer> {
 	    	
 
 // Import Patients Array and Create Export location
-	    	infoLabel.setText("Patiënten Initializeren");
+	    	infoLabel.setText("Patiï¿½nten Initializeren");
 			ArrayList<Patient> patients = new ArrayList<Patient>();
 			File exportFile;
 			
@@ -637,7 +633,7 @@ catch (Exception e)
 		rid++;
 		
 		XSSFRow row = ss.createRow(rid++);
-		fillNextCell(row, "Totale Patiënten:");
+		fillNextCell(row, "Totale Patiï¿½nten:");
 		fillNextCell(row, String.valueOf(tot));
 		
 		cid = 1;
