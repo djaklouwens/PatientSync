@@ -1,7 +1,6 @@
 package klouwens; //3 9 22.01 (9d)
 
 import java.awt.Color;
-import java.awt.Toolkit;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.ActionListener;
@@ -11,7 +10,6 @@ import java.awt.event.ItemEvent;
 import java.io.File;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
@@ -20,12 +18,10 @@ import javax.swing.JCheckBox;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JTextPane;
 import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import javax.swing.JInternalFrame;
 import javax.swing.JProgressBar;
 import javax.swing.JComboBox;
 import javax.swing.JFormattedTextField;
@@ -68,8 +64,8 @@ public class AdresFrame {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setTitle("PatientSync");
 		frame.getContentPane().setLayout(null);
-		frame.setIconImage(Toolkit.getDefaultToolkit().getImage(AdresFrame.class.getResource("/resources/PatientSync V6 png.png")));
-		
+	//	frame.setIconImage(Toolkit.getDefaultToolkit().getImage(AdresFrame.class.getResource("/resources/PatientSync V6 png.png")));
+	//TODO Get the Icon Image from PCDAAN	
 	
 
 // Initialize Labels
@@ -169,7 +165,7 @@ public class AdresFrame {
                 if(inputText.equals("null"))
                 {
                 	UserPreferences.insertActivationKey("null");
-                	infoLabel.setText("Activation Key has been reset");
+                	infoLabel.setText(trans.getString("reset.activationkey"));
     				errorLabel.setText(trans.getString("prompt.restart"));
                 }
                 

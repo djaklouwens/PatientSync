@@ -3,9 +3,6 @@ package klouwens;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
-import java.awt.Toolkit;
-
-
 import javax.swing.JFrame;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
@@ -47,8 +44,8 @@ public class DeveloperFrame {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setTitle("PatientSync Console");
 		frame.getContentPane().setLayout(new BorderLayout());
-		frame.setIconImage(Toolkit.getDefaultToolkit().getImage(AdresFrame.class.getResource("/resources/PatientSync V6 png.png")));
-		
+	//	frame.setIconImage(Toolkit.getDefaultToolkit().getImage(AdresFrame.class.getResource("/resources/PatientSync V6 png.png")));
+	//TODO Fix image	
 		console = new JTextPane();
 
 		console.setBackground(Color.DARK_GRAY.darker());

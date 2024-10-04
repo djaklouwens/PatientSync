@@ -2,7 +2,6 @@ package klouwens; //19/9/14.54
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
@@ -11,7 +10,6 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
@@ -19,18 +17,18 @@ import java.util.ResourceBundle;
 import javax.swing.JLabel;
 import javax.swing.JProgressBar;
 import javax.swing.SwingWorker;
-import javax.swing.text.BadLocationException;
 
 import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.openqa.selenium.By;
+import org.openqa.selenium.Dimension;
 import org.openqa.selenium.Point;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
@@ -97,10 +95,9 @@ public class AdresCheckWorker extends SwingWorker<Void, Integer> {
 		
 		
 // Init Selenium
-		infoLabel.setText("Verbinden met SBV-Z starten");
+		infoLabel.setText(trans.getString("connect.svbz"));
 		System.out.println("	");
 		System.out.println("Start Selenium Initialization");
-//		System.setProperty("webdriver.chrome.driver", "E:\\chromedriver.exe");
 		ChromeOptions options = new ChromeOptions();
 		options.addArguments("--remote-allow-origins=*");
 		options.addArguments("--window-size=550,350");
@@ -108,12 +105,10 @@ public class AdresCheckWorker extends SwingWorker<Void, Integer> {
 		options.addArguments("--app=https://raadplegen.sbv-z.nl");
 		options.setExperimentalOption("excludeSwitches", new String[]{"enable-automation"});
 		options.addArguments("--disable-gpu");
+
 		
-		infoLabel.setText("Verbinden met SBV-Z 1/3");
-		System.out.println("Selenium Initialization 1/3");
-	//	WebDriverManager.chromedriver().setup();
-		infoLabel.setText("Verbinden met SBV-Z 2/3");
-		System.out.println("Selenium Initialization 2/3");		// Crashing here means the WebDriverManager has to be updated
+		System.out.println("Start Selenium Driver");
+		//Crash here can indicate a problem with the driver
     	ChromeDriver driver = new ChromeDriver(options);		
     	infoLabel.setText(trans.getString("waiting.login"));
     	System.out.println("Selenium Initialization 3/3");
@@ -129,15 +124,16 @@ public class AdresCheckWorker extends SwingWorker<Void, Integer> {
     	
     	if (! UserPreferences.getUserID().equals("DEV"))
     		{
-    		driver.manage().window().minimize();
     		driver.manage().window().setPosition(new Point(-32000,-32000));
+    		driver.manage().window().minimize();
     		}
+    	driver.manage().window().setSize(new Dimension(550,1080));
     	driver.get("https://raadplegen.sbv-z.nl/opvragen-persoonsgegevens");
     	System.out.println("Connected to SBV-Z");
     	
 // Importing AW data 
     	System.out.println("Importing AW data");
-    	infoLabel.setText("Opslagwijken Initializeren");
+    	infoLabel.setText(trans.getString("init.aw"));
     	List<String> aWen = Awen.getAWen();
     	
 // Make patients array from input 
@@ -148,8 +144,8 @@ public class AdresCheckWorker extends SwingWorker<Void, Integer> {
 	    {	
     		file ++;
     		rid = 0;
-	    	tot = 0;
-	    	faulty = 0;
+    		tot = 0;
+    		faulty = 0;
 	    	noBSN = 0;
 	    	noAdres = 0;
 	    	awMed = 0;
@@ -169,7 +165,7 @@ public class AdresCheckWorker extends SwingWorker<Void, Integer> {
 	    	
 
 // Import Patients Array and Create Export location
-	    	infoLabel.setText("Patiënten Initializeren");
+	    	infoLabel.setText(trans.getString("init.patients"));
 			ArrayList<Patient> patients = new ArrayList<Patient>();
 			File exportFile;
 			
@@ -206,7 +202,7 @@ public class AdresCheckWorker extends SwingWorker<Void, Integer> {
 	    	System.out.println("Showing faulty patients:");
 		for(Patient pt : patients)
 		{
-			infoLabel.setText("Syncing. . .");
+			infoLabel.setText(trans.getString("syncing"));
 			publish(tot);
 			tot = tot+1 ;
 			if (pt.getBsn().isEmpty())
@@ -261,6 +257,7 @@ public class AdresCheckWorker extends SwingWorker<Void, Integer> {
 		}
 		
 		System.out.println("Done importing patients from SVB-Z, shutting down driver");
+		infoLabel.setText(trans.getString("sync.completed"));
 		 driver.quit();	//TODO Maar 1 keer Selenium initten maar file verificatie wel daarvoor doen. Nu moet je 2 keer SBVz inloggen bij meerdere files
 		 publish(tot);
 // Print final counters
@@ -291,14 +288,14 @@ catch (Exception e)
 		System.err.println("An error occurred while syncing patients. This can be caused by: Selenium, ChromeDriver, Inputfile, or dataparsing  ");
 		System.out.println("Printing Stack Trace:");
 		e.printStackTrace();
-		errorLabel.setText("An error occurred while syncing patients, please try again");;
+		errorLabel.setText(trans.getString("error.sync"));;
 		infoLabel.setText(trans.getString("sync.aborted"));
 	}
     
     return null;
     
     }
-	
+	//DEPRECIATED (niet meer in gebruik denk ik???? chenk en dan weghalen. deze taak is overgenomen door importCSVPatientstoArray
 	public static ArrayList<Patient> makePatientArray(String[][] input)
 	{	
 		ArrayList<Patient> patients;
@@ -498,13 +495,17 @@ catch (Exception e)
 	
 	public static String importPostcodeSVBZ(ChromeDriver driver, Patient pt)
 	{
-		WebElement searchBox = new WebDriverWait(driver,Duration.ofSeconds(40)).until(ExpectedConditions.visibilityOfElementLocated(By.id("bsn")));
+		WebElement searchBox = new WebDriverWait(driver,Duration.ofSeconds(40)).until(ExpectedConditions.elementToBeClickable(By.id("bsn")));
 		searchBox.sendKeys(pt.getBsn());
 				
-		WebElement searchButton = driver.findElement(By.xpath("//button"));
-		searchButton.click();
+	//	WebElement searchButton = driver.findElement(By.xpath("//button"));
+		
+	//	WebElement searchButton = driver.findElement(By.xpath("//*[@id=\"content\"]/app-opvragen-persoonsgegevens/sbvz-opvragen-persoonsgegevens/sbvz-bsn/form/fieldset/div/div/button"));
+	//	WebElement searchButton = new WebDriverWait(driver,Duration.ofSeconds(40)).until(ExpectedConditions.elementToBeClickable(By.xpath("//*[@id=\"content\"]/app-opvragen-persoonsgegevens/sbvz-opvragen-persoonsgegevens/sbvz-bsn/form/fieldset/div/div/button")));
+	//	searchButton.click();
+		new Actions(driver).click(new WebDriverWait(driver, Duration.ofMillis(2000)).until(ExpectedConditions.elementToBeClickable(By.xpath("//*[@id=\"content\"]/app-opvragen-persoonsgegevens/sbvz-opvragen-persoonsgegevens/sbvz-bsn/form/fieldset/div/div/button")))).build().perform();
 				
-		WebElement postcodeBox = new WebDriverWait(driver,Duration.ofSeconds(40)).until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@id=\"verblijfplaatsDataTable\"]/table/tbody/tr[7]/td")));
+		WebElement postcodeBox = new WebDriverWait(driver,Duration.ofSeconds(40)).until(ExpectedConditions.elementToBeClickable(By.xpath("//*[@id=\"verblijfplaatsDataTable\"]/table/tbody/tr[7]/td")));
 		postcodeBox = driver.findElement(By.xpath("//*[@id=\"verblijfplaatsDataTable\"]/table/tbody/tr[7]/td"));
 		String pc = postcodeBox.getText();
 		
@@ -520,9 +521,10 @@ catch (Exception e)
 			pt.setStad("");
 		}
 				
-		WebElement anderBSN = driver.findElement(By.xpath("//*[@id=\"content\"]/app-opvragen-persoonsgegevens-resultaat/div/a"));
-		anderBSN.click();
-
+	//	WebElement anderBSN = new WebDriverWait(driver, Duration.ofSeconds(40)).until(ExpectedConditions.elementToBeClickable(By.xpath("//*[@id=\"content\"]/app-opvragen-persoonsgegevens/sbvz-opvragen-persoonsgegevens/sbvz-opvragen-persoonsgegevens-resultaat/div/a")));
+		new Actions(driver).click(new WebDriverWait(driver, Duration.ofMillis(2000)).until(ExpectedConditions.elementToBeClickable(By.xpath("//*[@id=\"content\"]/app-opvragen-persoonsgegevens/sbvz-opvragen-persoonsgegevens/sbvz-opvragen-persoonsgegevens-resultaat/div/a")))).build().perform();
+	//	anderBSN.click();
+	//	new Actions(driver).moveToElement(new WebDriverWait(driver, Duration.ofMillis(20)).until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@id=\"content\"]/app-opvragen-persoonsgegevens/sbvz-opvragen-persoonsgegevens/sbvz-opvragen-persoonsgegevens-resultaat/div/a")))).click().build().perform();
 		return pc;
 	}
 			
@@ -637,7 +639,7 @@ catch (Exception e)
 		rid++;
 		
 		XSSFRow row = ss.createRow(rid++);
-		fillNextCell(row, "Totale Patiënten:");
+		fillNextCell(row, "Totale Patiï¿½nten:");
 		fillNextCell(row, String.valueOf(tot));
 		
 		cid = 1;
@@ -685,8 +687,6 @@ catch (Exception e)
     
     @Override
 	protected void process(List<Integer> chunks) {
-        Locale locale = Locale.getDefault();
-		ResourceBundle trans = ResourceBundle.getBundle("resources/translations", locale);
     	int progress = chunks.get(chunks.size() - 1);
         progressLabel.setText(trans.getString("progressbar.progress") + " " + progress + " " + trans.getString("progressbar.outof") + " " + max + " " + trans.getString("progressbar.patients"));
         progressBar.setMaximum(max);
