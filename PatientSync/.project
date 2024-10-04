@@ -20,11 +20,4 @@
 		<nature>org.eclipse.m2e.core.maven2Nature</nature>
 		<nature>org.eclipse.jdt.core.javanature</nature>
 	</natures>
-	<linkedResources>
-		<link>
-			<name>src/resources/PatientSync V6 png.png</name>
-			<type>1</type>
-			<location>E:/Gebruikers/Daniël/Pictures/PatientSync V6 png.png</location>
-		</link>
-	</linkedResources>
 </projectDescription>
