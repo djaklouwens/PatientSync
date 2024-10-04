@@ -1,6 +1,7 @@
 package klouwens; //3 9 22.01 (9d)
 
 import java.awt.Color;
+import java.awt.Toolkit;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.ActionListener;
@@ -64,8 +65,8 @@ public class AdresFrame {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setTitle("PatientSync");
 		frame.getContentPane().setLayout(null);
-	//	frame.setIconImage(Toolkit.getDefaultToolkit().getImage(AdresFrame.class.getResource("/resources/PatientSync V6 png.png")));
-	//TODO Get the Icon Image from PCDAAN	
+		frame.setIconImage(Toolkit.getDefaultToolkit().getImage(AdresFrame.class.getResource("/resources/PatientSync V6 png.png")));
+
 	
 
 // Initialize Labels
