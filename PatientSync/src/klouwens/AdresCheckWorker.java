@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JProgressBar;
 import javax.swing.SwingWorker;
@@ -36,6 +37,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 
 public class AdresCheckWorker extends SwingWorker<Void, Integer> {
     private File[] inputfiles;
+    private static JFrame frame;
     private static JLabel errorLabel;
     private static JLabel infoLabel;
     private static JProgressBar progressBar;
@@ -59,8 +61,9 @@ public class AdresCheckWorker extends SwingWorker<Void, Integer> {
 
  	
 
-    public AdresCheckWorker(File[] inputfiles, JLabel errorLabel, JLabel infoLabel,JProgressBar progressBar, JLabel progressLabel, JLabel fileLabel) {
+    public AdresCheckWorker(File[] inputfiles, JFrame frame, JLabel errorLabel, JLabel infoLabel,JProgressBar progressBar, JLabel progressLabel, JLabel fileLabel) {
         this.inputfiles = inputfiles;
+        AdresCheckWorker.frame = frame;
         AdresCheckWorker.errorLabel = errorLabel;
         AdresCheckWorker.infoLabel = infoLabel;
         AdresCheckWorker.progressBar = progressBar;
@@ -109,12 +112,28 @@ public class AdresCheckWorker extends SwingWorker<Void, Integer> {
 		
 		System.out.println("Start Selenium Driver");
 		//Crash here can indicate a problem with the driver
-    	ChromeDriver driver = new ChromeDriver(options);		
+    	ChromeDriver driver = new ChromeDriver(options);
+		frame.addWindowListener(new java.awt.event.WindowAdapter() 
+			{ 
+			public void windowClosing(java.awt.event.WindowEvent e) 
+				{
+				try 
+					{
+					driver.quit();
+					}
+				finally
+				{
+					System.exit(0);
+				}
+				
+			}
+		});
+
     	infoLabel.setText(trans.getString("waiting.login"));
     	System.out.println("Selenium Initialization 3/3");
     	System.out.println("Waiting for user login");
-    	
-    	driver.get("https://raadplegen.sbv-z.nl/Diensten/OpvragenPersoonsgegevens");
+    	driver.get("https://uzipas.raadplegen.sbv-z.nl/opvragen-persoonsgegevens");
+    	driver.get("https://raadplegen.sbv-z.nl/auth/uzipas/inloggen?return=%2Fopvragen-persoonsgegevens");
     	System.out.println("User login sucessful");
  
 	
@@ -128,7 +147,7 @@ public class AdresCheckWorker extends SwingWorker<Void, Integer> {
     		driver.manage().window().minimize();
     		}
     	driver.manage().window().setSize(new Dimension(550,1080));
-    	driver.get("https://raadplegen.sbv-z.nl/opvragen-persoonsgegevens");
+    	new Actions(driver).click(new WebDriverWait(driver, Duration.ofMillis(2000)).until(ExpectedConditions.elementToBeClickable(By.xpath("//*[@id=\"persoonsgegevens-opvragen\"]/a")))).build().perform();
     	System.out.println("Connected to SBV-Z");
     	
 // Importing AW data 

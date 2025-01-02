@@ -30,7 +30,7 @@ import javax.swing.JFormattedTextField;
 import org.jdesktop.swingx.prompt.PromptSupport;
 import org.jdesktop.swingx.prompt.PromptSupport.FocusBehavior;
 
-public class AdresFrame {
+public class AdresFrame extends JFrame{
 	// GUI Items
 		JFrame frame;
 		JLabel errorLabel;
@@ -67,8 +67,6 @@ public class AdresFrame {
 		frame.getContentPane().setLayout(null);
 		frame.setIconImage(Toolkit.getDefaultToolkit().getImage(AdresFrame.class.getResource("/resources/PatientSync V6 png.png")));
 
-	
-
 // Initialize Labels
 		errorLabel = new JLabel(""); // initialize error label with empty text
 		errorLabel.setBounds(20, 42, 697, 40);
@@ -76,7 +74,7 @@ public class AdresFrame {
         errorLabel.setHorizontalAlignment(SwingConstants.CENTER);
         frame.getContentPane().add(errorLabel); // add to frame
 
-        infoLabel = new JLabel(""); // initialize progress label with empty text
+        infoLabel = new JLabel(""); // initialize info label with empty text
         infoLabel.setBounds(10, 11, 707, 20);
         infoLabel.setForeground(Color.BLACK); // set text color to black
         infoLabel.setHorizontalAlignment(SwingConstants.CENTER);
@@ -86,7 +84,7 @@ public class AdresFrame {
         fileLabel = new JLabel("");
         fileLabel.setBounds(121, 440, 400, 14);
         progressLabel = new JLabel("");
-        progressLabel.setBounds(330, 460, 200, 14);
+        progressLabel.setBounds(300, 460, 200, 14);
         
         validationTextField = new JFormattedTextField();
         validationTextField.setBounds(270, 93, 200, 20);
@@ -145,7 +143,8 @@ public class AdresFrame {
 		comboBox.setEnabled(false);
 	}
 	public ResourceBundle getTrans() {
-	Locale.setDefault(new Locale(UserPreferences.getLocale()));
+//	Locale.setDefault(new Locale(UserPreferences.getLocale()));
+	Locale.setDefault(Locale.of(UserPreferences.getLocale()));
 	return ResourceBundle.getBundle("resources/translations", Locale.getDefault());
 	}
 	public void updateMain() 
@@ -290,7 +289,7 @@ public class AdresFrame {
 				File[] inputfiles = fileChooser.getSelectedFiles();
 
 				// Create a new AdresCheckWorker and execute it
-			    AdresCheckWorker worker = new AdresCheckWorker(inputfiles, errorLabel, infoLabel, progressBar, progressLabel, fileLabel);
+			    AdresCheckWorker worker = new AdresCheckWorker(inputfiles, frame, errorLabel, infoLabel, progressBar, progressLabel, fileLabel);
 			    worker.execute();
 
 			    
@@ -312,10 +311,9 @@ public class AdresFrame {
     
     progressBar = new JProgressBar();
     progressBar.setBounds(121, 457, 465, 22);
-    frame.getContentPane().add(progressBar);
     frame.getContentPane().add(progressLabel);
+    frame.getContentPane().add(progressBar);
     frame.getContentPane().add(fileLabel);
-    
     comboBox = new JComboBox<String>(new String[]{"Nederlands", "English"}); // add language options to the combobox
     comboBox.setBounds(597, 457, 120, 22);
     frame.getContentPane().add(comboBox);

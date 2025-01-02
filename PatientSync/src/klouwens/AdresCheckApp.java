@@ -33,7 +33,7 @@ public class AdresCheckApp {
 						developerFrame.frame.setVisible(true);
 					}
 				
-					System.out.println("PatientSync v0.7.1");
+					System.out.println("PatientSync v0.7.7");
 					System.out.println("All rights reserved. Copyright 2022-" + Year.now() + ".");
 					System.out.println("	");
 					System.out.println("Activation Key:	" + UserPreferences.getActivationKey());
