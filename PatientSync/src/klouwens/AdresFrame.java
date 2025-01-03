@@ -30,6 +30,7 @@ import javax.swing.JFormattedTextField;
 import org.jdesktop.swingx.prompt.PromptSupport;
 import org.jdesktop.swingx.prompt.PromptSupport.FocusBehavior;
 
+
 public class AdresFrame extends JFrame{
 	// GUI Items
 		JFrame frame;

@@ -232,44 +232,43 @@ public class AdresCheckWorker extends SwingWorker<Void, Integer> {
 				
 			else 
 			{	
-				pt.setPostcodeSVBZ(importPostcodeSVBZ(driver, pt));	
+				importDataSVBZ(driver, pt);	
 				if(pt.getPostcodeSVBZ().replace("\\s+","").isEmpty())
 				{
 					noAdres ++;
+					exportFaultyPatient(ss, pt, tot);
 				}
 				
 				else if(!pt.getPostcodeSVBZ().equalsIgnoreCase(pt.getPostcodeMedicom()))
 				{
 					faulty = faulty + 1;
 			
-// Compare against AW			//TODO FIX AWEN
-					
-					String medAW = "";
-					String sbvzAW = "";
+// Compare against AW
+				
 					
 						
 					for(String aw : aWen)
 					{
-						if(aw.replaceAll("\\s+","").equals(pt.getPostcodeMedicom()))
+						if(aw.replaceAll("\\s+","").equalsIgnoreCase(pt.getPostcodeMedicom()))
 						{
-							medAW = "OW";
+							pt.setMedicomOW(true);
 							awMed++;
 						}
-						if(aw.replaceAll("\\s+","").equals(pt.getPostcodeSVBZ())) 
+						if(aw.replaceAll("\\s+","").equalsIgnoreCase(pt.getPostcodeSVBZ())) 
 						{
-							sbvzAW = "OW";
+							pt.setSvbzOW(true);
 							awSBVZ++;
 						}	
 					}
 					
-					if(medAW.equals(sbvzAW) && medAW.equals("OW"))
+					if(pt.isMedicomOW() && pt.isSvbzOW())
 					{
 						awMed--;
 						awSBVZ--;
 					}
 
-					printFaultyPatient(pt, medAW, sbvzAW, tot);
-					exportFaultyPatient(ss, pt, medAW, sbvzAW, tot);
+					printFaultyPatient(pt, tot);
+					exportFaultyPatient(ss, pt, tot);
 					
 				}
 			}
@@ -277,7 +276,7 @@ public class AdresCheckWorker extends SwingWorker<Void, Integer> {
 		
 		System.out.println("Done importing patients from SVB-Z, shutting down driver");
 		infoLabel.setText(trans.getString("sync.completed"));
-		 driver.quit();	//TODO Maar 1 keer Selenium initten maar file verificatie wel daarvoor doen. Nu moet je 2 keer SBVz inloggen bij meerdere files
+		 driver.quit();	
 		 publish(tot);
 // Print final counters
 		exportStatistics(ss);
@@ -314,26 +313,7 @@ catch (Exception e)
     return null;
     
     }
-	//DEPRECIATED (niet meer in gebruik denk ik???? chenk en dan weghalen. deze taak is overgenomen door importCSVPatientstoArray
-	public static ArrayList<Patient> makePatientArray(String[][] input)
-	{	
-		ArrayList<Patient> patients;
-		patients = new ArrayList<Patient>();
-				
-		for (String[] ptInfo : input)
-		{
-			Patient pt = new Patient();
-					
-			pt.setBsn(ptInfo[0].replaceAll("\\s+",""));
-			pt.setPostcodeMedicom(ptInfo[1].replaceAll("\\s+",""));
-			pt.setGeboortedatum(ptInfo[2].replaceAll("\\s+",""));
-			pt.setWoonverband(ptInfo[3].replaceAll("\\s+",""));
-			patients.add(pt);
-		}
-		return patients;
-		
-	}
-	
+
 	public static ArrayList<Patient> importCSVPatientsToArray(File inputFile) throws IOException 
 	{
 		ArrayList<Patient> patients;
@@ -512,7 +492,7 @@ catch (Exception e)
 	}
 	
 	
-	public static String importPostcodeSVBZ(ChromeDriver driver, Patient pt)
+	public static void importDataSVBZ(ChromeDriver driver, Patient pt)
 	{
 		WebElement searchBox = new WebDriverWait(driver,Duration.ofSeconds(40)).until(ExpectedConditions.elementToBeClickable(By.id("bsn")));
 		searchBox.sendKeys(pt.getBsn());
@@ -527,13 +507,26 @@ catch (Exception e)
 		WebElement postcodeBox = new WebDriverWait(driver,Duration.ofSeconds(40)).until(ExpectedConditions.elementToBeClickable(By.xpath("//*[@id=\"verblijfplaatsDataTable\"]/table/tbody/tr[7]/td")));
 		postcodeBox = driver.findElement(By.xpath("//*[@id=\"verblijfplaatsDataTable\"]/table/tbody/tr[7]/td"));
 		String pc = postcodeBox.getText();
+		pt.setPostcodeSVBZ(pc);
 		
 		WebElement straatBox = driver.findElement(By.xpath("//*[@id=\"verblijfplaatsDataTable\"]/table/tbody/tr[2]/td"));
 		WebElement nummerBox = driver.findElement(By.xpath("//*[@id=\"verblijfplaatsDataTable\"]/table/tbody/tr[3]/td"));
 		WebElement stadBox = driver.findElement(By.xpath("//*[@id=\"verblijfplaatsDataTable\"]/table/tbody/tr[8]/td"));
+		WebElement opschortingBox = driver.findElement(By.xpath("//*[@id=\"inschrijvingResultaat\"]/table/tbody/tr[1]/td"));
+		WebElement onderzoekBox = driver.findElement(By.xpath("//*[@id=\"persoonsResultaat\"]/table/tbody/tr[11]/td"));
+		WebElement geheimBox = driver.findElement(By.xpath("//*[@id=\"inschrijvingResultaat\"]/table/tbody/tr[2]/td"));
+
 		pt.setStraat(straatBox.getText());
 		pt.setNummer(nummerBox.getText());
 		pt.setStad(" " + stadBox.getText());
+		pt.setOpschorting(opschortingBox.getText());
+		pt.setOnderzoek(onderzoekBox.getText());
+		
+		String geheim = geheimBox.getText();
+		if(!geheim.equalsIgnoreCase("Geen beperking")) { 
+			pt.setGeheim(geheim);
+		}
+		
 		
 		if(pt.getStad().equalsIgnoreCase(" Capelle aan den IJssel"))
 		{
@@ -544,12 +537,11 @@ catch (Exception e)
 		new Actions(driver).click(new WebDriverWait(driver, Duration.ofMillis(2000)).until(ExpectedConditions.elementToBeClickable(By.xpath("//*[@id=\"content\"]/app-opvragen-persoonsgegevens/sbvz-opvragen-persoonsgegevens/sbvz-opvragen-persoonsgegevens-resultaat/div/a")))).build().perform();
 	//	anderBSN.click();
 	//	new Actions(driver).moveToElement(new WebDriverWait(driver, Duration.ofMillis(20)).until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@id=\"content\"]/app-opvragen-persoonsgegevens/sbvz-opvragen-persoonsgegevens/sbvz-opvragen-persoonsgegevens-resultaat/div/a")))).click().build().perform();
-		return pc;
 	}
 			
-	public static void printFaultyPatient(Patient pt, String med, String sbvz, int tot)
+	public static void printFaultyPatient(Patient pt, int tot)
 	{
-		System.out.println(tot + " BSN: " + pt.getBsn() + ", GD: " + pt.getGeboortedatum() + ", WV: "+ pt.getWoonverband() + ";			Correcte adres: " + pt.getStraat() + " " + pt.getNummer() + " "+ pt.getPostcodeSVBZ() + "			"+ med + " / " + sbvz   );
+		System.out.println(tot + " BSN: " + pt.getBsn() + ", GD: " + pt.getGeboortedatum() + ", WV: "+ pt.getWoonverband() + ";			Correcte adres: " + pt.getStraat() + " " + pt.getNummer() + " "+ pt.getPostcodeSVBZ() + "			"+ pt.isMedicomOW() + " / " + pt.isSvbzOW()   );
 	}
 					
 	public static int cid;
@@ -597,7 +589,7 @@ catch (Exception e)
 		fillNextCell(row, "SBV-Z");
 	}
 			
-	public static void exportFaultyPatient(XSSFSheet ss, Patient pt, String medAW, String sbvzAW, int tot )
+	public static void exportFaultyPatient(XSSFSheet ss, Patient pt, int tot )
 	{
 		cid = 0;
 		XSSFRow row = ss.createRow(rid++);
@@ -639,11 +631,25 @@ catch (Exception e)
 			fillNextCell(row, pt.getStad());
 		}
 		cid++;
-		fillNextCell(row, medAW );
-		fillNextCell(row, sbvzAW);
+		if(pt.isMedicomOW()) {
+			fillNextCell(row, "OW" );
+		}
+		else {
+			fillNextCell(row, "" );
+		}
+		if(pt.isSvbzOW()) {
+			fillNextCell(row, "OW" );
+		}
+		else {
+			fillNextCell(row, "" );
+		}
 		cid++;
 		fillNextCell(row, UserPreferences.getUserID() + "/ Vlgns SVB-Z woont pt nu op: " + pt.getStraat() + " " + pt.getNummer() + " " + pt.getPostcodeSVBZ() + pt.getStad() + ". Oude adres: " + pt.getAdresMedicom() + " " + pt.getPostcodeMedicom());
-		//TODO ^ Goede text
+		//TODO ^ Goede text		
+		fillNextCell(row, pt.getOnderzoek());
+		fillNextCell(row, pt.getOpschorting());
+		fillNextCell(row, pt.getGeheim());
+
 	}
 
 	public static void fillNextCell(XSSFRow row, String data)
@@ -658,7 +664,7 @@ catch (Exception e)
 		rid++;
 		
 		XSSFRow row = ss.createRow(rid++);
-		fillNextCell(row, "Totale Pati�nten:");
+		fillNextCell(row, "Totale Patienten:");
 		fillNextCell(row, String.valueOf(tot));
 		
 		cid = 1;
@@ -668,7 +674,7 @@ catch (Exception e)
 	
 		cid = 1;	
 		row = ss.createRow(rid++);
-		fillNextCell(row, "Geheim Adress:");
+		fillNextCell(row, "Geen Adress:");
 		fillNextCell(row, String.valueOf(noAdres));
 	
 		cid = 1;
